@@ -1,3 +1,13 @@
+import {
+    setListenerOrientation
+}
+from "./audioStreamManager.js";
+import {
+    notifyConnectedPeers
+}
+from "./broadcaster.js"
+
+
 function latLongToECEF(coords) {
     var cosLat = Math.cos(coords.latitude * Math.PI / 180.0);
     var sinLat = Math.sin(coords.latitude * Math.PI / 180.0);
@@ -23,7 +33,24 @@ function latLongToECEF(coords) {
 
 export function getCurrentPosition(callback) {
     navigator.geolocation.getCurrentPosition(function(position) {
-        var ECEFCoords = latLongToECEF(position.coords)        
+        var ECEFCoords = latLongToECEF(position.coords)
         callback(ECEFCoords);
     });
+}
+
+export function watchPosition(nodeType) {
+    if (nodeType == "listener") {
+        navigator.geolocation.watchPosition(function(position) {
+            //Notify server
+            setListenerOrientation(latLongToECEF(position.coords));
+        });
+    } else if (nodeType == "broadcaster") {
+        {
+            navigator.geolocation.watchPosition(function(position) {
+                //Notify server
+                notifyConnectedPeers(latLongToECEF(position.coords));
+            });
+        }
+
+    }
 }

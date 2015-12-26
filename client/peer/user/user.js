@@ -11,25 +11,17 @@ import {
 }
 from './requesManager.js';
 import {
-    onCallByBnode,
-    callLnode
+    onCallByBnode,    
 }
-from "./audioStreamManager.js"
+from "./listener.js"
 
-
-export function connectToBnode(nearbyBnodeId, peer, metadata) {
-    var conn = peer.connect(nearbyBnodeId, {
-        "metadata": metadata
-    });
-
+import{
+    onConnectingBnode
 }
+from "./broadcaster.js"
 
-function onConnectingBnode(peer, metadata) {
-    peer.on('connection', function(conn) {
-        console.log("bnode", metadata.name, "connected lnode", conn.metadata.name);
-        callLnode(conn.peer, peer);
-    });
-}
+
+
 
 function connectToSuperUser(peer, metadata) {
     var conn = peer.connect(superUserDetails.name, {
@@ -50,8 +42,7 @@ export function createUser(metadata) {
     peer = new Peer(peerConfigOptions);
 
     if (metadata.type == "broadcaster") {
-        onConnectingBnode(peer, metadata);
-        //onCallingBnode(peer, metadata);
+        onConnectingBnode(peer, metadata);        
     } else {
         onCallByBnode(peer);
     }

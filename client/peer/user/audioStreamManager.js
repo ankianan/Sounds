@@ -1,14 +1,46 @@
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+
+var audioCtx = new AudioContext(),
+    pannerMap = {};
+
+function creatPanner(peer, coords) {
+    var panner = audioCtx.createPanner();
+
+    pannerMap[peer] = panner;
+
+    panner.panningModel = 'HRTF';
+    panner.distanceModel = 'inverse';
+    panner.refDistance = 1;
+    panner.maxDistance = 10000;
+    panner.rolloffFactor = 1;
+    panner.coneInnerAngle = 360;
+    panner.coneOuterAngle = 0;
+    panner.coneOuterGain = 0;
+    panner.setOrientation(coords.x, coords.y, coords.z);
+
+}
+export function disconnectPanner(bnodeId) {
+    pannerMap[bnodeId].discConnect();
+}
+export function setPannerOrientation(bnodeId, coords) {
+    pannerMap[bnodeId].setOrientation(coords.x, coords.y, coords.z);
+}
+
+export function setListenerOrientation(coords) {
+    var listener = audioCtx.listener;
+    listener.setOrientation(0, 0, -1, 0, 1, 0);
+}
+
+export function listenToAll() {
+
+
+}
 
 export function onCallByBnode(peer) {
-    console.log(peer);
+
     peer.on('call', function(call) {
-        /*getUserMedia.call(window.navigator, {
-            video: true,
-            audio: true
-        }, 
-        function(stream) {*/
-        call.answer(); // Answer the call with an A/V stream.
+        call.answer();
         call.on('stream', function(remoteStream) {
             var video = document.querySelector('video');
             video.src = window.URL.createObjectURL(remoteStream);
@@ -16,24 +48,15 @@ export function onCallByBnode(peer) {
                 video.play();
             };
         });
-        /*}
-        , function(err) {
-                    console.log('Failed to get local stream', err);
-                });*/
     });
 }
 
 export function callLnode(lNodeId, peer) {
     getUserMedia.call(window.navigator, {
-            video: true,
+            //video: true,
             audio: true
         }, function(stream) {
             var call = peer.call(lNodeId, stream);
-            /*call.on('stream', function(remoteStream) {
-                // Show stream in some video/canvas element.
-                console.log(stream);
-
-            });*/
         },
         function(err) {
             console.log('Failed to get local stream', err);
