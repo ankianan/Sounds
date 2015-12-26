@@ -38,19 +38,36 @@ If Lnode (Listener node) joins:
 Nearby broadcasters stream are sourced to client using audio node.
 
 ####Methods
+* setListenerOrientation : Set location of listener.
 * listenToAll : Split gains among nearby Bnodes in ratio of their distance to Lnode
 * listenToOne : Set gains of all other to 0. 
 
-###Listener node
+###Broadcaster node
 
 ####Methods
+* notifyServer : Take broadcasters id and coords as Param
+* notifyConnectedPeers : Take array of peer ids and current coords as arguments.
+
+###Listener node
+
+####Members
+* threshold : Maximum distance between listener and nearby broadcaster
+
+####Methods
+* distance : Same as on server side, calculate distance between two coords.
+* isInRange : Return true if distance between source and listener is less than equal to threshold.
+* refreshSources : On being notified from broadcaster, call isInRange
 * select : On Tap, call listenToOne method of Audio node.
 * unselect : On Tap again, call listenToAll method of Audio node.
 
-###Common to  Lnode and Bnode
+###Geo location
 
 ####Methods
-* navigate: On change of geolocation, notify server to update its coords.
+* getDistance : Returns distance between two nodes
+* watchPosition : On location change
+ * Broadcaster notifies server and connected peers about location change
+ * Connected listeners refresh its source based on new coords.
+  
 
 
 
