@@ -1,0 +1,18 @@
+<script src="peer.min.js"></script>
+<script type="text/javascript" src="bundle.js"></script>
+<form action="javascript:void(0)" onsubmit="registerUser(this)" style="padding:10px;">
+    <label>
+        Your name
+        <input name="name" />
+    </label>
+    <label>
+        Your type
+        <select name="type">
+            <option value="broadcaster">Broadcaster</option>
+            <option value="listener">listener</option>
+        </select>
+    </label>
+    <input type="submit" />
+</form>
+<input type="button" value="createSuperUser" onclick="createSuperUser()" />
+<video></video>

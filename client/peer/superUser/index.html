@@ -1,0 +1,37 @@
+<script type="text/javascript">
+function binarySearch(data, val, lowIndex, highIndex) {
+
+    var highIndex = highIndex;
+    var lowIndex = lowIndex;
+
+    if (highIndex > lowIndex) {
+        var index = Math.floor((highIndex + lowIndex) / 2);
+
+        var sub = data[index];
+        if (data[lowIndex] > val) {
+            return [lowIndex, lowIndex];
+        } else if (data[lowIndex] == val) {
+            return [lowIndex, lowIndex];
+        } else if (sub == val) {
+            return [index, index];
+        } else if (data[highIndex] == val) {
+            return [highIndex, highIndex];
+        } else if (data[highIndex] < val) {
+            return [highIndex, highIndex + 1];
+        } else if (sub > val) {
+            if (highIndex == index) {
+                return [highIndex, lowIndex].sort();
+            }
+            highIndex = index;
+        } else {
+            if (lowIndex == index) {
+                return [highIndex, lowIndex].sort();
+            }
+            lowIndex = index;
+        }
+        return binarySearch(data, val, lowIndex, highIndex);
+    }
+
+    return [highIndex, lowIndex].sort();
+}
+</script>
