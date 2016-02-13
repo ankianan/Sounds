@@ -1,4 +1,4 @@
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var audioCtx = new AudioContext(),
@@ -37,28 +37,5 @@ export function listenToAll() {
 
 }
 
-export function onCallByBnode(peer) {
 
-    peer.on('call', function(call) {
-        call.answer();
-        call.on('stream', function(remoteStream) {
-            var video = document.querySelector('video');
-            video.src = window.URL.createObjectURL(remoteStream);
-            video.onloadedmetadata = function(e) {
-                video.play();
-            };
-        });
-    });
-}
 
-export function callLnode(lNodeId, peer) {
-    getUserMedia.call(window.navigator, {
-            //video: true,
-            audio: true
-        }, function(stream) {
-            var call = peer.call(lNodeId, stream);
-        },
-        function(err) {
-            console.log('Failed to get local stream', err);
-        });
-}
