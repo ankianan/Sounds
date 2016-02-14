@@ -2,7 +2,17 @@ import {
     getNode
 }
 from "./node.js"
+import {
+    peerMap,
+    getOpenConnectionTo
+}
+from "./connections.js"
 
+export messages = {
+    "JOIN": 1
+}
+
+var baseGossipUrl = "/gossip";
 var gossipTargetsCount = 5;
 
 function getRandomBoolean() {
@@ -26,11 +36,40 @@ function getTargetsNodeIds(nodeId, groupId) {
     return targetNodeIds;
 }
 
-function spreadMessage(nodeId, groupId, message) {
+function sendMessage(message, toNodeId, byNodeId) {
+    var peer = peerMap[byNodeId];
+    var SFOBJ_openConn = getOpenConnectionTo(toNodeId, peer);
+
+    if ("promise" in SFOBJ_openConn) {
+        SFOBJ_openConn.promise.then(function(openedConn) {
+            conn.send(baseGossipUrl, {
+                message: message
+            });
+        })
+    } else if ("conn" in SFOBJ_openConn) {
+        SFOBJ_openConn.conn.send(baseGossipUrl, {
+            message: message
+        });
+    }
+}
+
+export function init_recieveMessage(peer) {
+    peer.on('connection', function(conn) {
+        conn.on(baseGossipUrl, function(data) {
+            if (data.message == message["JOIN"]) {
+                //Update soft node state 
+            }
+        });
+    });
+}
+
+export function spreadMessage(byNodeId, groupId, message) {
     var targetNodeIds = getTargetsNodeIds(nodeId, groupId);
-    for(key in targetNodeIds){
-    	var nodeId = targetNodeIds[key];
-    	//Peer communicate messages
+    for (key in targetNodeIds) {
+        var toNodeId = targetNodeIds[key];
+        //Peer communicate messages
+        sendMessage(message, toNodeId, byNodeId);
+
     }
 
 }

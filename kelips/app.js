@@ -10,6 +10,8 @@ from "./peer/superUser/superUser.js";
 */
 /*window.createSuperUser = createSuperUser;*/
 
+
+
 window.registerUser = function(form) {
     var userMetadata = {
         "name": form.elements.name.value,

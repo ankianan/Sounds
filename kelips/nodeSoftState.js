@@ -1,7 +1,8 @@
 import {
-    getIntroducerNode
+    queryNames,
+    queryBy
 }
-from "./affinityGroup.js";
+from "./connection.js"
 
 //Number of contacts per foreign affinity group
 var c = 2;
@@ -47,47 +48,54 @@ function updateNodeSoftState(nodeId, newNodeId, nodeSoftState) {
 }
 
 
-
-function initNodeSoftState(nodeId, groupId) {    
-
-    if (nodeId == 0) {//Is introducer
-
-        return {
-            AFGroupView: {
-                0 : {
-                    roundTripTime : 0,
-                    heartBeatCount : 100
-                }
-            }
-            /*{
-                        nodeId: {
-                            roundTripTime: "integer",
-                            heartBeatCount: "integer"
-                        }
-                    }*/
-            ,
-            contacts: {}
-            /*
-                       /*{AFGroupId: [{
-                           nodeId: "integer",
-                           roundTripTime: "integer",
-                           heartBeatCount: "integer"
-                       }]}
-                   */
-            ,
-            fileTuples: []
-                /*[{
-                            file: "string",
-                            nodeId: "integer",
-                            heartBeatCount: "integer"
-                        }]*/
-
-        }
-
-
-    } else { //Not introducer
-        var node = getIntroducerNode(groupId);
-        return node.softState;
-    }
+export function getNodeSoftState(node) {
+    return node.softState;
 }
 
+export function getIntroducerNodeSoftState(nodeId, groupId) {
+
+    if (nodeId == groupId) { //Is introducer
+
+        var AFGroupView = {};
+        AFGroupView[groupId] = {
+            roundTripTime: 0,
+            heartBeatCount: 100
+        }
+
+        return {
+            softState: {
+                AFGroupView: AFGroupView
+                    /*{
+                                nodeId: {
+                                    roundTripTime: "integer",
+                                    heartBeatCount: "integer"
+                                }
+                            }*/
+                    ,
+                contacts: {}
+                /*
+                           /*{AFGroupId: [{
+                               nodeId: "integer",
+                               roundTripTime: "integer",
+                               heartBeatCount: "integer"
+                           }]}
+                       */
+                ,
+                fileTuples: []
+                    /*[{
+                                file: "string",
+                                nodeId: "integer",
+                                heartBeatCount: "integer"
+                            }]*/
+
+            }
+        }
+
+    } else {
+        //Peer call to introducer node return promise
+        var introducerId = groupId;
+        return {
+            promise: queryBy(queryNames["getNodeSoftState"], introducerId, nodeId);
+        }
+    }
+}

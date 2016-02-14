@@ -1,15 +1,11 @@
 import {
-    createNode
+    createIntroducerNode
 }
-from "./nodes.js"
+from "./introducer.js"
 
 //Number of affinity group
 var k = 2; // 0,1
 
-//Map of introducer nodes indexed by affinity group index
-var introducerMap = {
-    //groupId : nodeObject
-};
 
 
 /**
@@ -21,17 +17,12 @@ export function getAffinityGroup(hash) {
     return hash % k;
 }
 
-function createIntroducerNode(groupId) {
-    return createNode({
-        "name": "introducer",
-        "contact": "0"
-    });
-}
-
-export function getIntroducerNode(groupId) {
-    var introducerNode = introducerMap[groupId];
-    if (!introducerNode) {
-        introducerNode = introducerMap[groupId] = createIntroducerNode(groupId);
+/**
+ * [createAffinityGroup Create as many introducer nodes as many the number of affinity groups]
+ * @return {[type]} [description]
+ */
+export function createAffinityGroup() {
+    for (var groupId = 0; groupId < k; groupId++) {
+        createIntroducerNode(groupId);
     }
-    return introducerNode;
 }
